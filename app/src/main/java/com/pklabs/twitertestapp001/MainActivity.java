@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.os.StrictMode;
 import android.text.TextUtils;
 import android.util.Log;
@@ -21,8 +22,6 @@ import android.widget.Toast;
 
 import java.io.InputStream;
 
-import twitter4j.ResponseList;
-import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -249,7 +248,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
                 break;
             case R.id.btn_timeline:
-                new GetTimeLineTask().execute();
+                TwitterAccess twitterAccess = new TwitterAccess();
+                twitterAccess.setConsumerKey(Constants.Twitter_Consumer_Key);
+                twitterAccess.setConsumerSecret(Constants.Twitter_Consumer_Key);
+                String oAuthTokenKey = mSharedPreferences.getString(PREF_KEY_OAUTH_TOKEN, "");
+                String oAuthTokenSecret = mSharedPreferences.getString(PREF_KEY_OAUTH_SECRET, "");
+                twitterAccess.setoAuthTokenSecret(oAuthTokenKey);
+                twitterAccess.setoAuthTokenKey(oAuthTokenSecret);
+
+                Intent intent = new Intent(this, TimelineActivity.class);
+                intent.putExtra(Constants.TwitterAccessIntentKey, (Parcelable) twitterAccess);
+                startActivity(intent);
                 break;
         }
     }
@@ -435,46 +444,4 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
-    class GetTimeLineTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected void onPreExecute() {
-            pDialog = new ProgressDialog(MainActivity.this);
-            pDialog.setMessage("Getting twitter...");
-            pDialog.setIndeterminate(false);
-            pDialog.setCancelable(false);
-            pDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.setOAuthConsumerKey(consumerKey);
-                builder.setOAuthConsumerSecret(consumerSecret);
-
-                // Access Token
-                String access_token = mSharedPreferences.getString(PREF_KEY_OAUTH_TOKEN, "");
-                // Access Token Secret
-                String access_token_secret = mSharedPreferences.getString(PREF_KEY_OAUTH_SECRET, "");
-
-                AccessToken accessToken = new AccessToken(access_token, access_token_secret);
-                Twitter twitter = new TwitterFactory(builder.build()).getInstance(accessToken);
-
-                // Get timeline
-                ResponseList<twitter4j.Status> responseList = twitter.getHomeTimeline();
-
-
-//                Log.d("Status", response.getText());
-
-            } catch (TwitterException e) {
-                Log.d("Failed to post!", e.getMessage());
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-        }
-    }
 }
