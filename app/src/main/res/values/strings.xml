@@ -1,6 +1,20 @@
 <resources>
     <string name="app_name">TwiterTestApp001</string>
-
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+
+    <!-- Strings used in app ui-->
+    <string name="hello">Hello, </string>
+    <string name="login_instructions">Login to twitter</string>
+    <string name="share_instructions">Enter share message</string>
+    <string name="btn_login">Login to Twitter</string>
+    <string name="btn_share">Share</string>
+
+    <!-- Twitter Configurations -->
+    <string name="twitter_callback">oauth://t4jsample</string>
+    <string name="twitter_consumer_key">mflTVncz91IkTSp6UZR6dxwzS</string>
+    <string name="twitter_consumer_secret">6AG0dzBui09nquP4jVcr5FoTFadsSsrHqhJVeyuLndaPfarVrH</string>
+    <string name="twitter_oauth_verifier">oauth_verifier</string>
+    <string name="btn_timeline">Get Timeline</string>
+    <!-- End Configurations -->
 </resources>
