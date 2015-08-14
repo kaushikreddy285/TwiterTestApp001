@@ -250,14 +250,15 @@ public class MainActivity extends Activity implements View.OnClickListener {
             case R.id.btn_timeline:
                 TwitterAccess twitterAccess = new TwitterAccess();
                 twitterAccess.setConsumerKey(Constants.Twitter_Consumer_Key);
-                twitterAccess.setConsumerSecret(Constants.Twitter_Consumer_Key);
-                String oAuthTokenKey = mSharedPreferences.getString(PREF_KEY_OAUTH_TOKEN, "");
-                String oAuthTokenSecret = mSharedPreferences.getString(PREF_KEY_OAUTH_SECRET, "");
-                twitterAccess.setoAuthTokenSecret(oAuthTokenKey);
-                twitterAccess.setoAuthTokenKey(oAuthTokenSecret);
+                twitterAccess.setConsumerSecret(Constants.Twitter_Consumer_Secret);
+                twitterAccess.setoAuthTokenKey(mSharedPreferences.getString(PREF_KEY_OAUTH_TOKEN, ""));
+                twitterAccess.setoAuthTokenSecret(mSharedPreferences.getString(PREF_KEY_OAUTH_SECRET, ""));
+
 
                 Intent intent = new Intent(this, TimelineActivity.class);
-                intent.putExtra(Constants.TwitterAccessIntentKey, (Parcelable) twitterAccess);
+//                Bundle bundle = new Bundle();
+//                bundle.putParcelable(Constants.TwitterAccessIntentKey, twitterAccess);
+                intent.putExtra(Constants.TwitterAccessIntentKey, twitterAccess);
                 startActivity(intent);
                 break;
         }

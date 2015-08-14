@@ -1,9 +1,11 @@
 package com.pklabs.twitertestapp001;
 
+import java.io.Serializable;
+
 /**
  * Created by Kaushik on 8/13/15.
  */
-public class TwitterAccess {
+public class TwitterAccess implements Serializable {
     private String consumerKey;
     private String consumerSecret;
     private String oAuthTokenKey;
@@ -42,11 +44,10 @@ public class TwitterAccess {
     }
 
     public TwitterAccess() {
-        this(null, null, null, null);
+        this("", "", "", "");
     }
 
     public TwitterAccess(String consumerKey, String consumerSecret, String oAuthTokenKey, String oAuthTokenSecret) {
-
         if (consumerKey == null) {
             throw new IllegalArgumentException("consumerKey");
         }

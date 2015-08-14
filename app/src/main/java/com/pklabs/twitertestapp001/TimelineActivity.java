@@ -8,10 +8,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -35,12 +37,31 @@ public class TimelineActivity extends Activity {
         mListView = (ListView) findViewById(R.id.timelinelist);
 
         Intent intent = this.getIntent();
+        //intent = null;
         if (null != intent) {
-            TwitterAccess twitterAccess = (TwitterAccess) intent.getParcelableExtra(Constants.TwitterAccessIntentKey);
+            TwitterAccess twitterAccess = (TwitterAccess) intent.getSerializableExtra(Constants.TwitterAccessIntentKey);
             new GetTimeLineAsyncTask().execute(twitterAccess);
         } else {
             String[] values = new String[]{
-                    "Empty list..."
+                    "item-1",
+                    "item-2",
+                    "item-3",
+                    "item-4",
+                    "item-5",
+                    "item-6",
+                    "item-7",
+                    "item-8",
+                    "item-9",
+                    "item-10",
+                    "item-11",
+                    "item-12",
+                    "item-13",
+                    "item-14",
+                    "item-15",
+                    "item-16",
+                    "item-17",
+                    "item-18",
+                    "item-19",
             };
             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
                     //context
@@ -60,11 +81,11 @@ public class TimelineActivity extends Activity {
 
         @Override
         protected void onPreExecute() {
-            ProgressDialog progressDialog = new ProgressDialog(TimelineActivity.this);
-            progressDialog.setMessage("Getting twitter timeline...");
-            progressDialog.setIndeterminate(false);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
+            mProgressDialog = new ProgressDialog(TimelineActivity.this);
+            mProgressDialog.setMessage("Getting twitter timeline...");
+            mProgressDialog.setIndeterminate(false);
+            mProgressDialog.setCancelable(false);
+            mProgressDialog.show();
         }
 
         @Override
@@ -75,18 +96,18 @@ public class TimelineActivity extends Activity {
 
                 //consumer key
                 ConfigurationBuilder builder = new ConfigurationBuilder();
-                builder.setOAuthConsumerKey(twitterAccess.getConsumerKey());
-                builder.setOAuthConsumerSecret(twitterAccess.getConsumerSecret());
-
-                //access token
-                AccessToken accessToken = new AccessToken(twitterAccess.getoAuthTokenSecret(), twitterAccess.getoAuthTokenKey());
-                Twitter twitter = new TwitterFactory(builder.build()).getInstance(accessToken);
+                builder.setDebugEnabled(true)
+                        .setOAuthConsumerKey(twitterAccess.getConsumerKey())
+                        .setOAuthConsumerSecret(twitterAccess.getConsumerSecret())
+                        .setOAuthAccessToken(twitterAccess.getoAuthTokenKey())
+                        .setOAuthAccessTokenSecret(twitterAccess.getoAuthTokenSecret());
+                Twitter twitter = new TwitterFactory(builder.build()).getInstance();
 
                 //Get timeline
-                User user = twitter.verifyCredentials();
-                List<twitter4j.Status> statuses = twitter.getHomeTimeline();
-                return statuses;
-
+                //User user = twitter.verifyCredentials();
+                Paging paging = new Paging();
+                paging.setCount(200);
+                return twitter.getHomeTimeline(paging);
             } catch (TwitterException e) {
                 Log.d("timeline error", e.getMessage());
             }
@@ -96,25 +117,30 @@ public class TimelineActivity extends Activity {
 
         @Override
         protected void onPostExecute(List<twitter4j.Status> statuses) {
-            ArrayList<String> arrayList = new ArrayList<String>();
+            if (statuses != null) {
+                ArrayList<String> arrayList = new ArrayList<String>();
 
-            for (twitter4j.Status currentStatus: statuses)
-            {
-                arrayList.add(currentStatus.toString());
+                int i=1;
+                for (twitter4j.Status currentStatus : statuses) {
+                    arrayList.add(i + ": " +currentStatus.getText());
+                    i++;
+                }
+
+                String[] values = arrayList.toArray(new String[arrayList.size()]);
+                ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                        //context
+                        TimelineActivity.this,
+                        //layout for the row
+                        android.R.layout.simple_list_item_1,
+                        //id of the textview
+                        android.R.id.text1,
+                        //values
+                        values
+                );
+                mListView.setAdapter(arrayAdapter);
+            } else {
+                Toast.makeText(TimelineActivity.this, "statuses is NULL.", Toast.LENGTH_LONG).show();
             }
-
-            String[] values = arrayList.toArray(new String[arrayList.size()]);
-            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
-                    //context
-                    TimelineActivity.this,
-                    //layout for the row
-                    android.R.layout.simple_list_item_1,
-                    //id of the textview
-                    android.R.id.text1,
-                    //values
-                    values
-            );
-            mListView.setAdapter(arrayAdapter);
             mProgressDialog.dismiss();
         }
     }

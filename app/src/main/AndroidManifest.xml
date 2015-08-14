@@ -25,12 +25,15 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="t4jsample"
+                    android:host="TwiterTestApp001"
                     android:scheme="oauth" />
             </intent-filter>
         </activity>
         <activity
             android:name="com.pklabs.twitertestapp001.WebViewActivity"
+            android:label="@string/app_name" />
+        <activity
+            android:name=".TimelineActivity"
             android:label="@string/app_name" />
     </application>
 
